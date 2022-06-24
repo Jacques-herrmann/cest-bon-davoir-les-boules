@@ -1,5 +1,8 @@
-import {Scene, WebGLRenderer, PerspectiveCamera, BoxBufferGeometry, MeshBasicMaterial, Mesh} from "three";
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import {WebGLRenderer} from "three";
+import IntroScene from "./scenes/IntroScene";
+import GameScene from "./scenes/GameScene";
+import Sizes from "./utils/Sizes";
+import SurvivorGameScene from "./scenes/SurvivorGameScene";
 
 let instance = null;
 
@@ -9,10 +12,8 @@ export default class Engine {
 			return instance
 		}
 		instance = this
-
+		console.log(instance)
 		this.canvas = canvas
-
-		this.scene = new Scene()
 		this.renderer = new WebGLRenderer({
 			canvas: this.canvas,
 			antialias: true,
@@ -20,26 +21,37 @@ export default class Engine {
 		})
 		this.renderer.setSize(window.innerWidth, window.innerHeight)
 		this.renderer.setPixelRatio(window.devicePixelRatio)
-		this.renderer.setClearColor(0x000000, 1)
-		this.camera = new PerspectiveCamera(75, this.canvas.width / this.canvas.height, 0.1, 1000)
-		this.scene.add(this.camera)
-		this.scene.add(new Mesh(new BoxBufferGeometry(1, 1, 1), new MeshBasicMaterial({color: 0x00ffff})))
-		this.camera.position.set(0, 0, -5)
-		this.controls = new OrbitControls(this.camera, this.canvas)
+		this.renderer.setClearColor(0xffffff, 1)
 
-		window.addEventListener('resize', this.resize.bind(this))
+		this.sizes = new Sizes()
+		this.sizes.on('resize', this.resize.bind(this))
+
+		this.createScenes()
 		window.requestAnimationFrame(this.render.bind(this))
 	}
 
+	createScenes() {
+		this.scenes = {}
+		this.scenes.intro = new IntroScene()
+		this.scenes.game = new GameScene()
+		this.scenes.survivor = new SurvivorGameScene()
+
+		this.activeScene = this.scenes.survivor
+		this.scenes.intro.on("selected", this.toScene.bind(this))
+	}
+
+	toScene(index) {
+		this.activeScene = this.scenes.survivor
+	}
+
 	resize() {
-		this.camera.aspect = window.innerWidth / window.innerHeight
-		this.camera.updateProjectionMatrix()
+		this.activeScene.resize()
 		this.renderer.setSize(window.innerWidth, window.innerHeight)
 		this.renderer.setPixelRatio(window.devicePixelRatio)
 	}
 
 	render() {
-		this.renderer.render(this.scene, this.camera)
+		this.activeScene.render()
 		window.requestAnimationFrame(this.render.bind(this))
 	}
 }

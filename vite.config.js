@@ -14,7 +14,9 @@ export default defineConfig({
 			changeOrigin: true,
 		},
 	},
-	plugins: [
-		{},
-	],
+	server: {
+    watch: {
+      usePolling: true
+    }
+  }
 })

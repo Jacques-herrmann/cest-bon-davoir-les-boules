@@ -1,6 +1,7 @@
 import "./style.css"
-import Engine from "./webgl/engine";
+import Engine from "./webgl/Engine";
 
-const engine = new Engine(document.getElementById("webgl"));
+const canvas = document.getElementById("webgl")
+const engine = new Engine(canvas);
 
 window.engine = engine;
