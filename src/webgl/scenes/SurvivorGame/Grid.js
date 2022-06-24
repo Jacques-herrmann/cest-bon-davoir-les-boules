@@ -56,9 +56,9 @@ export default class Grid extends Group {
 	run() {
 		const remainingNode = tiles.flat().filter(n => n.type === undefined)
 		if (remainingNode.length) {
-			const random = Math.floor(Math.random() * remainingNode.length)
-			remainingNode[random].setNodeType()
-			Grid.propagate(remainingNode[random])
+			remainingNode.sort(n => n.neighbour.length)
+			remainingNode[0].setNodeType()
+			Grid.propagate(remainingNode[0])
 			this.run()
 		}
 	}
