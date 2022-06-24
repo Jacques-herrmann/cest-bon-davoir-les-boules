@@ -5,40 +5,32 @@ import {
 	Vector3,
 	BoxBufferGeometry, MeshBasicMaterial, Mesh
 } from 'three'
+import constraints from "./constraints";
+import Grid from "./Grid";
 
-const materials = [
-	new MeshBasicMaterial({color: new Color("#7ec850")}), // grass
-	new MeshBasicMaterial({color: new Color("#eab875")}), // sand
-	new MeshBasicMaterial({color: new Color("#808487")}), // rock
-	new MeshBasicMaterial({color: new Color("#80c5de")}), // water
-
-	new MeshBasicMaterial({color: new Color(Math.random(), Math.random(), Math.random())}), // rdm
-	new MeshBasicMaterial({color: new Color(Math.random(), Math.random(), Math.random())}), // rdm
-	new MeshBasicMaterial({color: new Color(Math.random(), Math.random(), Math.random())}), // rdm
-	new MeshBasicMaterial({color: new Color(Math.random(), Math.random(), Math.random())}), // rdm
-]
-
-let collapsed = 0
+const materials = []
+constraints.forEach(c => {
+	materials.push(new MeshBasicMaterial({color: new Color(c.color)}))
+})
 
 export class Node extends Group {
 	constructor(x, y, bounds) {
 		super()
 		this.x = x
 		this.y = y
-		this.key = this.y + '-' + this.x
 		this.type = undefined
 
 		this.box = new Box3(bounds[0], bounds[1])
 		this.center = new Vector3()
 		this.box.getCenter(this.center)
 
-		this.degreeOfFreedom = [0, 1, 2, 3, 4, 5, 6, 7]
+		this.neighbour = [0, 1, 2, 3]
 	}
 
 	setNodeType(index) {
 		if (!index) {
-			if (this.degreeOfFreedom.length) {
-				index = this.degreeOfFreedom[Math.floor(Math.random() * this.degreeOfFreedom.length)]
+			if (this.neighbour.length) {
+				index = this.neighbour[Math.floor(Math.random() * this.neighbour.length)]
 			} else {
 				index = Math.floor(Math.random() * materials.length)
 			}
@@ -49,15 +41,14 @@ export class Node extends Group {
 		this.add(this.mesh)
 	}
 
-	collapse(type, position, propagate) {
-		// Update Degree of freedom if neighbour node has type
-		const i = this.degreeOfFreedom.indexOf(type)
-		if (type !== -1) {
-			this.degreeOfFreedom.splice(i, 1)
-		}
-		if (this.degreeOfFreedom.length === 1) {
-			this.setNodeType(this.degreeOfFreedom[0])
-			propagate(this)
+	collapse(type, position) {
+		if (this.type !== undefined) return
+		const constraint = constraints.find(c => c.index === type)
+		this.neighbour = this.neighbour.filter(n => constraint.neighbour.indexOf(n) !== -1)
+
+		if (this.neighbour.length === 1) {
+			this.setNodeType(this.neighbour[0])
+			Grid.propagate(this)
 		}
 	}
 

@@ -5,7 +5,7 @@ export default class Terrain extends Group {
 	constructor() {
 		super()
 
-		this.grid = new Grid(8)
+		this.grid = new Grid(6)
 		this.add(this.grid)
 	}
 }
