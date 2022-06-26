@@ -25,7 +25,7 @@ export default class SurvivorGameScene {
 		this.cameras = {}
 		this.cameras.main = new PerspectiveCamera(75, this.engine.sizes.width / this.engine.sizes.height, 0.1, 1000)
 		this.activeCamera = this.cameras.main
-		this.cameras.main.position.set(5, 10, -5)
+		this.cameras.main.position.set(12, 15, 0)
 
 		this.instance.add(...Object.values(this.cameras))
 

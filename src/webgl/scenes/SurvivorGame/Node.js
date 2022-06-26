@@ -5,14 +5,14 @@ import {
 	Vector3,
 	BoxBufferGeometry, MeshBasicMaterial, Mesh
 } from 'three'
-import constraints from "./constraints";
 import Grid from "./Grid";
 import Loader from "../../utils/Loader";
 import gsap from 'gsap'
+import {NodeType} from "./NodeType";
 
 const materials = []
-constraints.forEach(c => {
-	materials.push(new MeshBasicMaterial({color: new Color(c.color)}))
+NodeType.instances.forEach(n => {
+	materials.push(new MeshBasicMaterial({color: new Color(n.color)}))
 })
 
 export class Node extends Group {
@@ -32,13 +32,15 @@ export class Node extends Group {
 	setNodeType(type) {
 		if (!type) {
 			if (this.neighbour.length) {
-				type = this.neighbour[Math.floor(Math.random() * this.neighbour.length)]
+				// Here we choose the current type
+				type = NodeType.getWeightedRand(this.neighbour)
 			} else {
+				// Nobody should be here
 				type = Math.floor(Math.random() * materials.length)
 			}
 		}
 		this.type = type
-		const name = constraints.find(c => c.index === type).name
+		const name = NodeType.instances.find(c => c.index === type).name
 		this.mesh = Loader.items[name].scene.children[0].clone()
 		this.mesh.position.copy(new Vector3()).add(new Vector3(this.center.x, 0.4, this.center.z))
 		this.add(this.mesh)
@@ -53,7 +55,7 @@ export class Node extends Group {
 
 	collapse(type, position) {
 		if (this.type !== undefined) return
-		const constraint = constraints.find(c => c.index === type)
+		const constraint = NodeType.instances.find(c => c.index === type)
 		this.neighbour = this.neighbour.filter(n => constraint.neighbour.indexOf(n) !== -1)
 
 		if (this.neighbour.length === 1) {
