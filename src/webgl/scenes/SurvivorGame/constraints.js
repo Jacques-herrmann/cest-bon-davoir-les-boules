@@ -14,7 +14,7 @@ export default [
 	{
 		name: 'rock',
 		index: 2,
-		neighbour: [0, 2],
+		neighbour: [0],
 		color: "#808487"
 	},
 	{

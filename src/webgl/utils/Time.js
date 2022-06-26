@@ -1,7 +1,7 @@
-import { EventEmitter2 } from 'eventemitter2'
+import {EventEmitter2} from 'eventemitter2'
 
 export default class Time extends EventEmitter2 {
-  constructor () {
+  constructor() {
     super()
 
     // Setup
@@ -15,7 +15,7 @@ export default class Time extends EventEmitter2 {
     })
   }
 
-  tick () {
+  tick() {
     const currentTime = Date.now()
     this.delta = currentTime - this.current
     this.current = currentTime
@@ -26,5 +26,9 @@ export default class Time extends EventEmitter2 {
     window.requestAnimationFrame(() => {
       this.tick()
     })
+  }
+
+  static delay(ms) {
+    return new Promise(res => setTimeout(res, ms));
   }
 }

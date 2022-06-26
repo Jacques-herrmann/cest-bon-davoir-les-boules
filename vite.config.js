@@ -7,7 +7,7 @@ export default defineConfig({
 			'@': './src',
 		},
 	},
-	publicDir: './static',
+	publicDir: '../static',
 	proxy: {
 		'/api': {
 			target: 'http://localhost:3000',
@@ -15,8 +15,8 @@ export default defineConfig({
 		},
 	},
 	server: {
-    watch: {
-      usePolling: true
-    }
-  }
+		watch: {
+			usePolling: true
+		}
+	}
 })

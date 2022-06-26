@@ -8,7 +8,7 @@ export default class Grid extends Group {
 		super()
 		this.division = division
 
-		this.tileSize = 1
+		this.tileSize = 2
 		this.size = division * this.tileSize
 
 		this.computeBoxs(division)

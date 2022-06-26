@@ -7,6 +7,8 @@ import {
 } from 'three'
 import constraints from "./constraints";
 import Grid from "./Grid";
+import Loader from "../../utils/Loader";
+import gsap from 'gsap'
 
 const materials = []
 constraints.forEach(c => {
@@ -27,18 +29,26 @@ export class Node extends Group {
 		this.neighbour = [0, 1, 2, 3]
 	}
 
-	setNodeType(index) {
-		if (!index) {
+	setNodeType(type) {
+		if (!type) {
 			if (this.neighbour.length) {
-				index = this.neighbour[Math.floor(Math.random() * this.neighbour.length)]
+				type = this.neighbour[Math.floor(Math.random() * this.neighbour.length)]
 			} else {
-				index = Math.floor(Math.random() * materials.length)
+				type = Math.floor(Math.random() * materials.length)
 			}
 		}
-		this.type = index
-		this.mesh = new Mesh(new BoxBufferGeometry(), materials[index])
-		this.mesh.position.add(new Vector3(this.center.x, 0, this.center.z))
+		this.type = type
+		const name = constraints.find(c => c.index === type).name
+		this.mesh = Loader.items[name].scene.children[0].clone()
+		this.mesh.position.copy(new Vector3()).add(new Vector3(this.center.x, 0.4, this.center.z))
 		this.add(this.mesh)
+		// setTimeout(() => {
+		// 	gsap.to(this.mesh.position, {
+		// 		y: 0,
+		// 		duration: 0.4,
+		// 		ease: 'back.out(1.2)'
+		// 	})
+		// }, Math.random() * 400)
 	}
 
 	collapse(type, position) {

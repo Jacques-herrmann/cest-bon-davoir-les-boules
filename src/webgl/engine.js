@@ -22,6 +22,7 @@ export default class Engine {
 		this.renderer.setSize(window.innerWidth, window.innerHeight)
 		this.renderer.setPixelRatio(window.devicePixelRatio)
 		this.renderer.setClearColor(0xffffff, 1)
+		this.renderer.shadowMap.enabled = true
 
 		this.sizes = new Sizes()
 		this.sizes.on('resize', this.resize.bind(this))

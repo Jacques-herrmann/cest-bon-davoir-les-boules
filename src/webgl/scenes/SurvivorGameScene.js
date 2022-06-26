@@ -1,12 +1,25 @@
-import {Scene, PerspectiveCamera, BoxBufferGeometry, MeshBasicMaterial, Mesh} from "three";
+import {
+	Scene,
+	PerspectiveCamera,
+	BoxBufferGeometry,
+	MeshBasicMaterial,
+	Mesh,
+	AmbientLight,
+	PointLight,
+	PointLightHelper, CameraHelper, DirectionalLight
+} from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import Engine from "../Engine";
 import Terrain from "./SurvivorGame/Terrain";
+import Loader from "../utils/Loader";
+import toLoad from "./SurvivorGame/toLoad";
 
 
 export default class SurvivorGameScene {
 	constructor() {
 		this.engine = new Engine()
+		this.loader = new Loader(toLoad)
+
 		this.instance = new Scene()
 
 		this.cameras = {}
@@ -16,13 +29,21 @@ export default class SurvivorGameScene {
 
 		this.instance.add(...Object.values(this.cameras))
 
-		this.terrain = new Terrain()
-		this.instance.add(this.terrain)
-
-		this.controls = new OrbitControls(this.activeCamera, this.engine.canvas)
-
 		window.addEventListener('resize', this.resize.bind(this))
 		window.requestAnimationFrame(this.render.bind(this))
+
+		this.loader.on('ready', this.init.bind(this))
+	}
+
+	init() {
+		this.terrain = new Terrain()
+		this.instance.add(this.terrain)
+		this.instance.add(new AmbientLight())
+		const p = new PointLight("#ffff00", 0.2)
+		p.position.set(-2, 6, 3)
+		this.instance.add(p)
+
+		this.controls = new OrbitControls(this.activeCamera, this.engine.canvas)
 	}
 
 	resize() {
